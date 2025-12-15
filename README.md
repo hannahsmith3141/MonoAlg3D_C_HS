@@ -1,3 +1,25 @@
+# Version details
+This version of MonoAlg3D will allow users to reproduce the simulations in “Female anatomies disguise ECG abnormalities following myocardial infarction: an AI-enabled modelling and simulation study” by Smith et al. Briefly, this allows the simulation of the ECG for a given mesh with a fast endocardial layer with healthy electrophysiology and in acute ischemia and infarction with variability in the cardiac position and orientation. This was adapted from the build developed in Riebel et al. 2024 https://doi.org/10.1038/s41598-024-67951-5 . It uses ischemia and infarction modelling developed and validated in Wang et al. 2021 https://doi.org/10.1093/europace/euaa405 and Zhou and Wang et al. 2024 https://doi.org/10.7554/eLife.93002.3 .
+
+# Meshes
+The meshes were constructed from UK Biobank cardiac magnetic resonance images, which can be accessed by application upon approval here: https://www.ukbiobank.ac.uk/enable-your-research/register . The cardiac meshes were reconstructed with the pipeline from Doste et al. 2025 
+https://doi.org/10.48550/arXiv.2503.03706 and the code is publicly here:  https://github.com/rdoste/InSilicoHeartGen . The electrode locations and torso meshes were obtained with the pipeline from Smith et al. 2025 https://doi.org/10.7554/eLife.108119.1  and the code is publicly available here: https://github.com/MultiMeDIA-Oxford/TORSO-MPP . 
+For these meshes, the extra data columns are firstly an integer to represent the cell type and infarct zone:
+
+- 1	Endocardial	Remote zone
+- 2	Midmyocardial	Remote zone
+- 3	Epicardial	Remote zone
+- 4	Endocardial	Infarct zone
+- 5	Midmyocardial	Infarct zone
+- 6	Epicardial	Infarct zone
+- 7	Endocardial	Border zone
+- 8	Midmyocardial	Border zone
+- 9	Epicardial	Border zone
+
+For these simulations, the ischemic region was taken as the infarct and border zone, so the whole affected region was set to the appropriate infarct zone code.
+The second extra column is a float to represent the IKs apex to base scaling value from 0.2 to 5.
+The third column is an integer to represent whether the volume is on the fast endocardial layer (1) or not (0).
+
 # MonoAlg3D ![build](https://github.com/rsachetto/MonoAlg3D_C/actions/workflows/build.yml/badge.svg)
 
 The MonoAlg3D is a program for solving the 3D monodomain equation by applying the Finite Volume Method.
@@ -51,6 +73,23 @@ Example file:
 ```
 
 This file represents 3 volumes with 100 micrometer of side. The first volume is centered at  at 850,850,950 and the calculated V is -85 mV.
+
+# Running examples for this paper
+Example configuration files for each simulation type are given in the configs folder.
+Change the following paths:
+-	stim_file
+-	mesh_file
+-	fibers_file
+-	output_dir
+-	filename for ECG
+
+And the following other variables:
+-	simulation name
+-	number_of_points
+-	Electrode locations for both unaltered and each rotated/translated geometry
+
+This outputs an ECG txt file that has 431 columns. The first is time, and all others are the ECG trace for electrodes in the positions that you specified. Note that each transformation of the electrode positions represents a reciprocal transformation of the cardiac mesh, i.e. 3cm superior translation of the electrodes is equivalent to 3cm inferior translation of the cardiac mesh.
+
 
 # Contributors:
 
